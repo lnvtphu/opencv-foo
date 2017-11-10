@@ -5,6 +5,7 @@ Example OpenCV applications written in Node.js.
 ## Running the Programs
 
 ```bash
+$ npm run foo    # run my demo
 $ npm run still-face-detection    # Still Image Face Detection
 $ npm run video-face-detection    # Live Video Face Detection
 $ npm run video-color-detection   # Live Video Color Detection
