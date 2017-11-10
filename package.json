@@ -12,7 +12,8 @@
 		"video-face-detection": "node programs/video-face-detection/main.js",
 		"video-color-detection": "node programs/video-color-detection/main.js",
 		"video-object-detection": "node programs/video-object-detection/main.js",
-		"foo": "node programs/foo/main.js"
+		"foo": "node programs/foo/main.js",
+		"fu": "node programs/foo/main2.js"
 	},
 	"author": "Andrew Dassonville",
 	"license": "MIT"
