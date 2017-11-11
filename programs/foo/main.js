@@ -3,11 +3,11 @@ const cv = require('opencv');
 var lowThresh = 20;
 var highThresh = 200;
 var nIters = 2;
-var maxArea = 20000;
+var maxArea = 10000;
 
-var size = 116;
+var size = 58;
 var widthOb = 1000000;
-var sizePixel = 1;
+var sizePixel = 0;
 
 var GREEN = [0, 255, 0]; // B, G, R
 var WHITE = [255, 255, 255]; // B, G, R
@@ -15,7 +15,7 @@ var RED   = [0, 0, 255]; // B, G, R
 const camera = new cv.VideoCapture(2);
 // const camera2 = new cv.VideoCapture(2);
 
-const window = new cv.NamedWindow('Camera 1', 0);
+const window = new cv.NamedWindow('Camera 1', cv.WINDOW_NORMAL);
 // const window2 = new cv.NamedWindow('Video Fuxk 2', 2);
 
 var position;
@@ -47,8 +47,8 @@ setInterval( () => {
         var x4 = rotated_rect.points[3];
         var angle = rotated_rect.angle;
         
-        if( position.width <  widthOb){
-          widthOb = position.width;
+        if( rotated_rect.size.width <  widthOb){
+          widthOb = rotated_rect.size.width;
         }
         sizePixel = size/widthOb;
         // ve khung hcn 
@@ -63,10 +63,18 @@ setInterval( () => {
         im.line([x3.x,x3.y], [x4.x, x4.y], (255,0,0), 2);
         im.line([x4.x,x4.y], [x1.x, x1.y], (255,0,0), 2);
         // hien thong so
-
-        im.putText('HCN dung: '+position.width+'-'+position.height, 'label', (70, 70), 0.2,(255,255,255),1,1);
-        im.putText('HCN theo vat: '+Math.round(rotated_rect.size.width)+'-'+Math.round(rotated_rect.size.height), 'label', (120, 120), 0.2,(255,255,255),1,1);
-        im.putText('Goc: '+Math.round(angle), 'label', (170, 170), 0.2,(255,255,255),1,1);
+        var widthReal = Math.floor(rotated_rect.size.width*sizePixel);
+        var heightReal = Math.floor(rotated_rect.size.height*sizePixel);
+        if(widthReal > heightReal){
+          var tmp = heightReal;
+          heightReal = widthReal;
+          widthReal = tmp;
+        }
+        console.log('Width: ' +widthReal);
+        console.log('Height: ' + heightReal);
+        im.putText('HCN dung: '+Math.floor(position.width*sizePixel)+'-'+Math.floor(position.height*sizePixel), 'label', (70, 70), 0.2,(255,255,255),1,1);
+        im.putText('HCN theo vat: '+widthReal+'-'+heightReal, 'label', (120, 120), 0.2,(255,255,255),1,1);
+        im.putText('RS/PX: '+(sizePixel), 'label', (170, 170), 0.2,(255,255,255),1,1);
         
       }
     }
