@@ -41,7 +41,7 @@ setInterval( () => {
         // console.log(contours.area(i));
         var moments = contours.moments(i);
         position = contours.boundingRect(i);
-        if( position.width < maxPixel){
+        if( position.width < maxPixel && position.height < maxPixel){
           var rotated_rect = contours.minAreaRect(i);
           // 4 dinh cua hcn 
           var x1 = rotated_rect.points[0];
