@@ -1,4 +1,5 @@
 const cv = require('opencv');
+var fs = require('fs');
 
 var lowThresh = 20;
 var highThresh = 200;
@@ -20,7 +21,7 @@ const window = new cv.NamedWindow('Camera 1', cv.WINDOW_NORMAL);
 
 var position;
 var position2;
-setInterval( () => {
+var main = setInterval( () => {
   camera.read(function(err, im) {
     if (err) throw err;
     const width = im.width();
@@ -65,12 +66,25 @@ setInterval( () => {
           // hien thong so
           widthReal = Math.floor((rotated_rect.size.width - 10)*sizePixel);
           heightReal = Math.floor((rotated_rect.size.height -10)*sizePixel);
-          console.log(position.width);
+          console.log(rotated_rect.size.height);
+          console.log(rotated_rect.size.width);
           if(widthReal > heightReal){
             var tmp = heightReal;
             heightReal = widthReal;
             widthReal = tmp;
           }
+          //ghi file
+          fs.writeFile( __dirname +"/rs.txt", "Width: " +widthReal +" --- Height: " + heightReal, function(err) {
+            if(err) {
+                return console.log(err);
+            }
+            console.log("The file was saved!");
+          }); 
+          // 
+          setTimeout(function(){ 
+            clearInterval(main); 
+            // process.exit(1);
+          }, 2000);
         }
 
         // im.putText('HCN dung: '+Math.floor(position.width*sizePixel)+'-'+Math.floor(position.height*sizePixel), 'label', (70, 70), 0.2,(255,255,255),1,1);
@@ -79,8 +93,8 @@ setInterval( () => {
         
       }
     }
-    console.log('Width: ' + widthReal);
-    console.log('Height: ' + heightReal);
+    // console.log('Width: ' + widthReal);
+    // console.log('Height: ' + heightReal);
     im.putText('HCN theo vat: '+widthReal+'-'+heightReal, 'label', (70, 70), 0.2,(255,255,255),1,1);
     window.show(im);
     window.blockingWaitKey(0, 50);
