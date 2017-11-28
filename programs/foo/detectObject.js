@@ -9,6 +9,8 @@ const camera = new cv.VideoCapture(camId);
 const window = new cv.NamedWindow('Camera 1', cv.WINDOW_NORMAL);
 var imRef;
 var imObj;
+var widthReal = 0;
+var heightReal = 0;
 exports.detectObject = function(){
     let main = setInterval( () => {
       camera.read(function(err, im) {
@@ -24,9 +26,19 @@ exports.detectObject = function(){
         imRef.inRange(lowThresh_Object_Ref, highThresh_Object_Ref);
 
         // im.convertGrayscale();
-
+        // get size of Detect Object
         const {widthR, heightR} = handleIm(im, imObj, lowThresh, highThresh, nIters, maxArea, true);
+        // get size of refer Object
         const {widthR: wR, heightR: hR} = handleIm(im, imRef, lowThresh, highThresh, nIters, maxArea, false);
+        sizePixel = size/widthR;
+        widthReal = Math.floor(widthR*sizePixel);
+        heightReal = Math.floor(heightR*sizePixel);
+        fs.writeFile( __dirname +"/rs.txt", "Width: " + widthReal +" --- Height: " + heightReal, function(err) {
+          if(err) {
+              return console.log(err);
+          }
+          console.log("The file was saved!");
+      }); 
         // if width > 50px then close window
         if(widthR > 50){
             setTimeout(function(){ 
@@ -43,8 +55,6 @@ exports.detectObject = function(){
   };
 var handleIm = function(imOriginal, im, lowThresh, highThresh, nIters, maxArea, isDraw){
     let position;
-    var widthReal = 0;
-    var heightReal = 0;
     let im_canny = im.copy();
     
       im_canny.canny(lowThresh, highThresh);
@@ -66,10 +76,10 @@ var handleIm = function(imOriginal, im, lowThresh, highThresh, nIters, maxArea, 
             // console.log(rotated_rect.length);
             var angle = rotated_rect.angle;
             
-            if( rotated_rect.size.width <  widthOb){
-              widthOb = rotated_rect.size.width;
-            }
-            sizePixel = size/widthOb;
+            // if( rotated_rect.size.width <  widthOb){
+            //   widthOb = rotated_rect.size.width;
+            // }
+            // sizePixel = size/widthOb;
             // ve khung hcn 
             if(isDraw){
                 imOriginal.rectangle([position.x, position.y],[position.width,position.height], RED, 2);
@@ -81,22 +91,9 @@ var handleIm = function(imOriginal, im, lowThresh, highThresh, nIters, maxArea, 
             im.line([x3.x,x3.y], [x4.x, x4.y], (255,0,0), 2);
             im.line([x4.x,x4.y], [x1.x, x1.y], (255,0,0), 2);
             // hien thong so
-            widthReal = Math.floor((rotated_rect.size.width - 10)*sizePixel);
-            heightReal = Math.floor((rotated_rect.size.height -10)*sizePixel);
-          //   console.log(rotated_rect.size.height);
-          //   console.log(rotated_rect.size.width);
-            if(widthReal > heightReal){
-              var tmp = heightReal;
-              heightReal = widthReal;
-              widthReal = tmp;
-            }
-            
-            fs.writeFile( __dirname +"/rs.txt", "Width: " + widthReal +" --- Height: " + heightReal, function(err) {
-                if(err) {
-                    return console.log(err);
-                }
-                console.log("The file was saved!");
-            }); 
+            // widthReal = Math.floor((rotated_rect.size.width - 10)*sizePixel);
+            // heightReal = Math.floor((rotated_rect.size.height -10)*sizePixel);
+          
           }
           // im.putText('HCN dung: '+Math.floor(position.width*sizePixel)+'-'+Math.floor(position.height*sizePixel), 'label', (70, 70), 0.2,(255,255,255),1,1);
           // im.putText('HCN theo vat: '+widthReal+'-'+heightReal, 'label', (120, 120), 0.2,(0,0,0),1,1);
@@ -104,7 +101,7 @@ var handleIm = function(imOriginal, im, lowThresh, highThresh, nIters, maxArea, 
         }
       }
       return {
-          widthR: widthReal,
-          heightR: heightReal
+          widthR: rotated_rect.size.width,
+          heightR: rotated_rect.size.height
       }
 }
