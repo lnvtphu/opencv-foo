@@ -25,12 +25,12 @@ exports.detectObject = function(){
         imObj.inRange(lowThresh_Object, highThresh_Object);
         imRef.inRange(lowThresh_Object_Ref, highThresh_Object_Ref);
 
-        // im.convertGrayscale();
+        im.convertGrayscale();
         // get size of Detect Object
-        const {widthR, heightR} = handleIm(im, imObj, lowThresh, highThresh, nIters, maxArea, true);
+        const {widthR, heightR} = handleIm(im, im, lowThresh, highThresh, nIters, maxArea, true);
         // get size of refer Object
         const {widthR: wR, heightR: hR} = handleIm(im, imRef, lowThresh, highThresh, nIters, maxArea, false);
-        sizePixel = size/widthR;
+        sizePixel = size/wR;
         widthReal = Math.floor(widthR*sizePixel);
         heightReal = Math.floor(heightR*sizePixel);
         fs.writeFile( __dirname +"/rs.txt", "Width: " + widthReal +" --- Height: " + heightReal, function(err) {
@@ -48,13 +48,14 @@ exports.detectObject = function(){
         // console.log('Width: ' + widthReal);
         // console.log('Height: ' + heightReal);
         // im.putText('HCN theo vat: '+widthReal+'-'+heightReal, 'label', (70, 70), 0.2,(255,255,255),1,1);
-        window.show(imObj);
+        window.show(im);
         window.blockingWaitKey(0, 50);
       });
     }, 100);
   };
 var handleIm = function(imOriginal, im, lowThresh, highThresh, nIters, maxArea, isDraw){
     let position;
+    let width = 0, height = 0;
     let im_canny = im.copy();
     
       im_canny.canny(lowThresh, highThresh);
@@ -73,7 +74,7 @@ var handleIm = function(imOriginal, im, lowThresh, highThresh, nIters, maxArea, 
             var x2 = rotated_rect.points[1];
             var x3 = rotated_rect.points[2];
             var x4 = rotated_rect.points[3];
-            // console.log(rotated_rect.length);
+            console.log(rotated_rect.size);
             var angle = rotated_rect.angle;
             
             // if( rotated_rect.size.width <  widthOb){
@@ -93,7 +94,8 @@ var handleIm = function(imOriginal, im, lowThresh, highThresh, nIters, maxArea, 
             // hien thong so
             // widthReal = Math.floor((rotated_rect.size.width - 10)*sizePixel);
             // heightReal = Math.floor((rotated_rect.size.height -10)*sizePixel);
-          
+          width: rotated_rect.size.width;
+          height: rotated_rect.size.height;
           }
           // im.putText('HCN dung: '+Math.floor(position.width*sizePixel)+'-'+Math.floor(position.height*sizePixel), 'label', (70, 70), 0.2,(255,255,255),1,1);
           // im.putText('HCN theo vat: '+widthReal+'-'+heightReal, 'label', (120, 120), 0.2,(0,0,0),1,1);
@@ -101,7 +103,7 @@ var handleIm = function(imOriginal, im, lowThresh, highThresh, nIters, maxArea, 
         }
       }
       return {
-          widthR: rotated_rect.size.width,
-          heightR: rotated_rect.size.height
+          widthR: width,
+          heightR: height
       }
 }
