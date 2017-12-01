@@ -1,5 +1,6 @@
 exports.config = {
     camId: 1,
+    camId2: 0,
     lowThresh: 20,
     highThresh: 200,
     // orange
